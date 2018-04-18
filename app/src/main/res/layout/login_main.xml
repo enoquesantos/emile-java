@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:gravity="center_horizontal"
+    android:focusable="false"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <ImageView
+        android:scaleType="fitXY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/app_logo"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginTop="25dp"
+        android:contentDescription="@string/app_logo" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="@color/colorPrimary"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:paddingTop="5dp"
+        android:elevation="10dp"
+        android:visibility="invisible"
+        android:progress="5" />
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColorHint="@color/colorHint">
+
+        <EditText
+            android:id="@+id/login_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/login_field_hint"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColorHint="@color/colorHint" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColorHint="@color/colorHint"
+        android:imeOptions="actionNext"
+        app:passwordToggleEnabled="true">
+
+        <EditText
+            android:id="@+id/password_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password_field_hint"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:imeOptions="actionSend"
+            android:textColorHint="@color/colorHint"
+            app:passwordToggleTint="@color/colorHint" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/login_submit_btn_txt"
+        android:id="@+id/submit_login_btn"
+        style="@style/ButtonNormal"
+        android:layout_marginTop="25dp"
+        android:minWidth="150dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lost_password_btn_txt"
+        android:id="@+id/lost_password_btn"
+        style="@style/ButtonSecondary"
+        android:layout_marginTop="50dp"
+        android:minWidth="150dp" />
+
+</LinearLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196f3</color>
+    <color name="colorPrimaryDark">#3b3b3b</color>
+    <color name="colorAccent">#483d8b</color>
+    <color name="colorHint">#546e7a</color>
+    <color name="textColorPrimary">#444444</color>
+    <color name="textColorHint">#aaaaaa</color>
+    <color name="textColorHighlight">#456a8c</color>
+    <color name="listItemSelectedHighlight">#e0eaf1</color>
+
+    <color name="background">#dddddd</color>
+    <color name="messageAlternateColor">#c2f9b8</color>
+    <color name="textAreaBorderColor">#e1e5e9</color>
+    <color name="white">#ffffff</color>
+</resources>

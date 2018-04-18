@@ -1,0 +1,18 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="3dp"
+    android:background="@color/background"
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/sm_list"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:choiceMode="singleChoice"
+        android:layout_gravity="center_horizontal"
+        android:footerDividersEnabled="true"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5sp" />
+
+</RelativeLayout>

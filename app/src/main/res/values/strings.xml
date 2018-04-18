@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_logo">Emile logo</string>
+    <string name="app_name">Emile</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="view_msg">Ver mensagens</string>
+    <string name="send_msg">Enviar mensagem</string>
+    <string name="my_profile">Meu perfil</string>
+    <string name="exit_to_app">Sair</string>
+    <string name="action_settings">Configurações</string>
+    <string name="lost_password_btn_txt">Recuperar senha</string>
+    <string name="login_submit_btn_txt">Login</string>
+    <string name="login_field_hint">Digite o seu login</string>
+    <string name="password_field_hint">Digite a sua senha</string>
+    <string name="lost_password_frag_btn_txt">Recuperar senha</string>
+    <string name="lost_password_text_field_placeholder">Informe o seu email</string>
+    <string name="lost_password_tip_text">Informe o seu email que enviaremos um link para você gerar uma nova senha.</string>
+    <string name="messages_loaded_success_msg">Mensagens carregadas com sucesso!</string>
+    <string name="msg_chars_count">caracteres restantes</string>
+    <string name="write_msg_hint">Escreva a mensagem</string>
+</resources>
