@@ -10,8 +10,6 @@ import org.json.JSONObject
 import android.view.*
 import android.widget.AbsListView
 import android.widget.Toast
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.animation.AnimationUtils
 import android.graphics.Point
 import android.support.v7.widget.CardView
@@ -41,9 +39,8 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
         userProfile         = UserProfile.getInstance()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        setHasOptionsMenu(true)
-        return inflater!!.inflate(R.layout.messages_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.messages_main, container, false)
     }
 
     override fun onResume() {
@@ -54,7 +51,7 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
         listView = activity!!.findViewById(R.id.list)
         floatingButton = activity!!.findViewById(R.id.send_message_action)
-        floatingButton!!.setOnClickListener { view ->
+        floatingButton!!.setOnClickListener { _ ->
             Toast.makeText(activity!!, "Create a new message...", Toast.LENGTH_SHORT).show()
         }
 
@@ -78,28 +75,6 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
         // start a request to load for new messages
         onRefresh()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.home, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-
-        var drawable = menu.findItem(R.id.action_select).icon
-        drawable = DrawableCompat.wrap(drawable)
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(activity!!, R.color.white))
-        menu.findItem(R.id.action_select).icon = drawable
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-        if (id == R.id.action_select) {
-            // Toast.makeText(getActivity(), "", Toast.LENGTH_LONG).show()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onScrollStateChanged(view: AbsListView, scrollState: Int) { }
@@ -169,8 +144,6 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
      * @override from SwipeRefreshLayout class
      */
     override fun onRefresh() {
-        // fake user id
-        // val userId = 177
         requestHandle!!.request(userProfile!!.id)
     }
 

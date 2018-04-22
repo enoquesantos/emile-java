@@ -56,7 +56,7 @@ public class RequestHttp {
      * @param strJson String
      * @return Object
      */
-    public static Object toJSON(String strJson) {
+    private static Object toJSON(String strJson) {
         Object jsonObject;
 
         try {
@@ -84,6 +84,7 @@ public class RequestHttp {
             builder.addHeader(RestService.tkHeaderKey, RestService.tkHeaderVal);
         }
 
+        Log.d("RequestHttp post", "path: " + path);
         if (isPost) {
             RequestBody body = RequestBody.create(jsonMediaType, postData);
             builder.post(body);

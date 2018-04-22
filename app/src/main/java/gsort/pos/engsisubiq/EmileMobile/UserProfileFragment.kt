@@ -17,8 +17,8 @@ class UserProfileFragment : Fragment() {
         localStorage = LocalStorage.getInstance()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.user_profile_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.user_profile_main, container, false)
     }
 
     override fun onResume() {

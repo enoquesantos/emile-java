@@ -7,7 +7,6 @@
     <string name="send_msg">Enviar mensagem</string>
     <string name="my_profile">Meu perfil</string>
     <string name="exit_to_app">Sair</string>
-    <string name="action_settings">Configurações</string>
     <string name="lost_password_btn_txt">Recuperar senha</string>
     <string name="login_submit_btn_txt">Login</string>
     <string name="login_field_hint">Digite o seu login</string>

@@ -7,23 +7,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
-import android.provider.Settings.System;
 import android.util.Log;
 
 public class Notifications {
 
-    private static Context context;
-    private static String packageName;
-    private static Resources resources;
-    private static SharedPreferences sharedPreferences;
-    private static String TAG = "Notification";
+    private Context context;
     private static Notifications instance;
 
     private Notifications() { }
@@ -34,17 +23,8 @@ public class Notifications {
         return instance;
     }
 
-    public void initialize(Context context) {
-        this.context      = context;
-        packageName       = context.getPackageName();
-        sharedPreferences = context.getSharedPreferences(packageName, Context.MODE_PRIVATE);
-
-        try {
-            PackageManager pm = context.getPackageManager();
-            resources = pm.getResourcesForApplication(packageName);
-        }  catch(Exception e) {
-            Log.e(TAG, Log.getStackTraceString(e));
-        }
+    public void initialize(Context ctx) {
+        context = ctx;
     }
 
     // android system notification has many options!
@@ -55,11 +35,10 @@ public class Notifications {
     public void notify(String title, String message, String messageData) {
         Intent intent = null;
         int messageId = new Random().nextInt(99999);
-        int badgeNum = sharedPreferences.getInt("badgeNumber", 0);
 
         // create a new intent to send to the Activity that will be pass to QtApplication.
         // The push message pay load data will be serialized and sent as argument when user click in the notification
-        // the messagaData value can be read as a new Intent extra parameter in onResume(...) method
+        // the #messagaData value can be read as a new Intent extra parameter in onResume(...) method
         // this feature works only if the app is opened!
         if (messageData != null) {
             intent = new Intent(context, MainActivity.class);
@@ -77,7 +56,7 @@ public class Notifications {
             notificationBuilder.setContentIntent(contentIntent);
         }
 
-        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher_round);
+        notificationBuilder.setSmallIcon(R.mipmap.icon_transparent);
         notificationBuilder.setAutoCancel(true);
         notificationBuilder.setContentText(message);
         notificationBuilder.setContentTitle(title);
@@ -85,7 +64,7 @@ public class Notifications {
         notificationBuilder.setVibrate(new long[] {500, 500, 500});
 
         // if the notification body text is a large text, show in notification
-        // as a big text, available from android lolipop or above
+        // as a big text, available from android lollipop or above
         Notification.BigTextStyle bigText = new Notification.BigTextStyle();
         bigText.bigText(message);
         bigText.setBigContentTitle(title);
@@ -96,6 +75,7 @@ public class Notifications {
             //    bigText.setSummaryText(":: " + sender);
             notificationBuilder.setStyle(bigText);
         } catch(Exception e) {
+            String TAG = "Notification";
             Log.e(TAG, Log.getStackTraceString(e));
         }
 

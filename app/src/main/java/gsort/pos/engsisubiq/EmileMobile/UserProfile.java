@@ -12,16 +12,18 @@ public class UserProfile {
     private         String          email;
     private         String          name;
     private         String          permissionName;
+    private         String          shortUsername;
     private         JSONArray       courseSections;
     private         JSONArray       messageDestinations;
     private         JSONObject      profile;
     private         JSONObject      program;
     private         boolean         _isLoggedIn;
     private         boolean         canSendMessages;
+    private         UserExtraData   userExtraData;
+    private         MainActivity    activity;
     private static  UserProfile     instance;
     private static  LocalStorage    localStorage;
     private static  String          TAG;
-    private         UserExtraData   userExtraData;
 
     /**
      * private construct : the class is a Singleton
@@ -31,6 +33,7 @@ public class UserProfile {
         email               = "";
         name                = "";
         permissionName      = "";
+        shortUsername       = "";
         _isLoggedIn         = false;
         canSendMessages     = false;
         localStorage        = LocalStorage.getInstance();
@@ -67,6 +70,11 @@ public class UserProfile {
             email   = profile.getString("email");
             name    = profile.getString("name");
 
+            if (!name.equals("")) {
+                String[] names = name.split(" ");
+                shortUsername = capitalizeString(names[0]) + " " + capitalizeString(names[names.length-1]);
+            }
+
             // when student, the json (after login) already contains the program object!
             if (data.has("program"))
                 program = data.getJSONObject("program");
@@ -82,6 +90,8 @@ public class UserProfile {
                 loadExtraFields();
                 localStorage.saveBool("is_user_logged_in", true);
             }
+
+            activity.setNavViewUserInformation(this);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -156,6 +166,10 @@ public class UserProfile {
         return name;
     }
 
+    public String getShortUsername() {
+        return shortUsername;
+    }
+
     public String getPermissionName() {
         return permissionName;
     }
@@ -196,6 +210,10 @@ public class UserProfile {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setActivity(MainActivity activity) {
+        this.activity = activity;
     }
 
     private void addTeacherMessagesDestinations() throws JSONException {
@@ -271,5 +289,9 @@ public class UserProfile {
 
         if (program.length() == 0)
             userExtraData.loadProgram();
+    }
+
+    private String capitalizeString(String line) {
+        return Character.toUpperCase(line.toCharArray()[0]) + line.substring(1).toLowerCase();
     }
 }

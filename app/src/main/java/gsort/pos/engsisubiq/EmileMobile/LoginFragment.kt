@@ -26,8 +26,8 @@ class LoginFragment : Fragment(), IRequestHttpFragment {
     private var progressBar         : ProgressBar?          = null
     private var loginRequestHandle  : LoginRequestHandle?   = null
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState!!.putBoolean("SUBMIT_STATE", submitLoginBtn!!.isEnabled)
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean("SUBMIT_STATE", submitLoginBtn!!.isEnabled)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +36,8 @@ class LoginFragment : Fragment(), IRequestHttpFragment {
         loginRequestHandle = LoginRequestHandle(this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.login_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.login_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

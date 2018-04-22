@@ -1,6 +1,8 @@
 package gsort.pos.engsisubiq.EmileMobile
 
+import android.app.Activity
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.AppBarLayout
@@ -14,6 +16,10 @@ import android.support.v4.widget.DrawerLayout
 import android.view.View
 import android.view.MenuItem
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.TextView
+import com.readystatesoftware.systembartint.SystemBarTintManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -58,13 +64,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         localStorage = LocalStorage.getInstance()
         localStorage!!.initialize(this)
 
+        setContentView(R.layout.activity_main)
+
         val userProfile = UserProfile.getInstance()
+        userProfile.setActivity(this)
         userProfile.loadFromLocalStorage()
 
-        setContentView(R.layout.activity_main)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
+        // https://github.com/jgilfelt/SystemBarTint
+        // create our manager instance after the content view is set
+        val tintManager = SystemBarTintManager(this)
+        // enable status bar tint
+        tintManager.isStatusBarTintEnabled = true
+        // enable navigation bar tint
+        tintManager.setNavigationBarTintEnabled(true)
+        // set the transparent color of the status bar, 20% darker
+        tintManager.setTintColor(Color.parseColor("#80215dbc"))
 
         // create all fragments
         fragments = HashMap()
+        fragments!![R.id.exit_to_app] = LoginFragment()
         fragments!![R.id.view_msg]    = MessagesFragment()
         fragments!![R.id.send_msg]    = SendMessageFragment()
         fragments!![R.id.my_profile]  = UserProfileFragment()
@@ -78,7 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> {
                 setToolBarEnabled(false)
                 setDrawerEnabled(false)
-                addFragment(LoginFragment(), "login")
+                addFragment(fragments!![R.id.exit_to_app], "login")
             }
         }
     }
@@ -101,19 +121,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var tag = ""
-        var fragment: Fragment? = null
-        when (item.itemId) {
+        val id = item.itemId
+        val fragment = fragments!![id]
+        when (id) {
             R.id.view_msg -> {
                 tag = "messages_view"
-                fragment = fragments!![R.id.view_msg]
             }
             R.id.send_msg -> {
                 tag = "send_message"
-                fragment = fragments!![R.id.send_msg]
             }
             R.id.my_profile -> {
                 tag = "user_profile"
-                fragment = fragments!![R.id.my_profile]
             }
             R.id.exit_to_app -> {
                 // set user logged in to false
@@ -127,7 +145,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 clearFragmentsStack()
 
                 tag = "user_login"
-                fragment = LoginFragment()
             }
         }
 
@@ -181,6 +198,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun setToolBarHomeButton() {
+        setKeyboardEnabled(false)
         setSupportActionBar(toolbar)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
@@ -212,6 +230,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun setToolBarTitle(title: String) {
         toolbar!!.title = title
+    }
+
+    fun setKeyboardEnabled(enabled: Boolean, editText: EditText? = null) {
+        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        // Find the currently focused view, so we can grab the correct window token from it.
+        var view = this.currentFocus
+        // If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null)
+            view = View(this)
+        if (enabled)
+            imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+        else
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun setNavViewUserInformation(userProfile: UserProfile) {
+        val navigationView = findViewById<View>(R.id.nav_view) as? NavigationView
+        val headerView = navigationView!!.getHeaderView(0)
+
+        val navUsername = headerView.findViewById(R.id.navHeaderUserName) as? TextView
+        val navUserEmail = headerView.findViewById(R.id.navHeaderUserEmail) as? TextView
+
+        runOnUiThread({
+            navUsername!!.text = userProfile.shortUsername
+            navUserEmail!!.text = userProfile.email.toLowerCase()
+        })
     }
 
     private fun setDrawerEnabled(enabled: Boolean) {

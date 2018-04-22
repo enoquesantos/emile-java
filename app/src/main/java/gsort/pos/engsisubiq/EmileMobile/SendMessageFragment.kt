@@ -27,8 +27,8 @@ class SendMessageFragment : Fragment(), AdapterView.OnItemClickListener {
         loadDestinations()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater!!.inflate(R.layout.send_message_main, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.send_message_main, container, false)
     }
 
     override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -39,7 +39,7 @@ class SendMessageFragment : Fragment(), AdapterView.OnItemClickListener {
         Handler().postDelayed({
             val writeFragment = WriteMessageFragment()
             val bundle = Bundle()
-            bundle.putString("submit_args", selectedOption!!.toString())
+            bundle.putString("message_args", selectedOption!!.toString())
             writeFragment.arguments = bundle
             activity!!.addFragment(writeFragment, "write_message")
         }, 550)
