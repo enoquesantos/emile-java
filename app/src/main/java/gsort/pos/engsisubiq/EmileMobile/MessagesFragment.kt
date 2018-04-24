@@ -1,7 +1,6 @@
 package gsort.pos.engsisubiq.EmileMobile
 
 import android.os.Bundle
-import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -13,6 +12,12 @@ import android.widget.Toast
 import android.view.animation.AnimationUtils
 import android.graphics.Point
 import android.support.v7.widget.CardView
+import android.content.Intent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.util.Log
+import android.content.IntentFilter
+import android.support.v4.content.LocalBroadcastManager
 
 class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -24,10 +29,23 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
     private var swipeRefreshWidget  : SwipeRefreshLayout?    = null
     private var listViewAdapter     : SimpleAdapter?         = null
     private var messagesOnTheView   : ArrayList<Int>?        = null
+    private var userProfile         : UserProfile?           = null
     private var listViewModel       : ArrayList<HashMap<String,String>>? = null
     private var fieldsNames         = arrayOf("sender", "title", "message", "date", "time")
     private var fieldsIds           = intArrayOf(R.id.sender, R.id.title, R.id.message, R.id.date, R.id.time)
-    private var userProfile         : UserProfile?           = null
+
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d("MessagesFragment", "onReceive called!!!")
+            val messageData = intent.getStringExtra("message_data")
+            val json = JSONObject(messageData)
+            json.put("sender", JSONObject(json.getString("sender")))
+            val objc = MessageBean(json)
+            appendMessageToList(objc,0)
+            listViewAdapter!!.notifyDataSetChanged()
+            Log.d("MessagesFragment", "message_data: $messageData")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +55,9 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
         messagesOnTheView   = ArrayList()
         requestHandle       = MessagesRequestHandle(this)
         userProfile         = UserProfile.getInstance()
+
+        val lbm = LocalBroadcastManager.getInstance(activity!!.applicationContext)
+        lbm.registerReceiver(broadcastReceiver, IntentFilter("push_message"))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,12 +87,6 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
         // get messages from local storage if exists from previous execution
         requestHandle!!.loadFromLocalStorage()
-
-        /**
-         * dynamic message append
-         * @WARNING only to test
-         */
-        addNewMessage()
 
         // start a request to load for new messages
         onRefresh()
@@ -131,6 +146,7 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
         activity!!.runOnUiThread({
             val list = data as ArrayList<*>
             for (message in list) {
+                message = message as MessageBean
                 if (messagesOnTheView!!.contains((message as MessageBean).id))
                     continue
                 appendMessageToList(message)
@@ -149,7 +165,7 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
     private fun appendMessageToList(message: MessageBean, index: Int = -1) {
         val map = HashMap<String, String>()
-        map["sender"]   = message.sender
+        map["sender"]   = getShortSenderName(message.sender)
         map["title"]    = message.title
         map["message"]  = message.message
         map["date"]     = message.date
@@ -177,26 +193,6 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
         messagesOnTheView!!.add(message.id)
     }
 
-    /**
-     * @example
-     */
-    private fun addNewMessage() {
-        Handler().postDelayed({
-            val json = JSONObject()
-            val sender = JSONObject()
-            sender.put("id", userProfile!!.id)
-            sender.put("name", "Enoque josé")
-            json.put("id", 5000)
-            json.put("date", "2018-03-28T23:56:46.617378")
-            json.put("title", "Teste de mensagem dinâmica")
-            json.put("sender", sender)
-            json.put("message", "An easy adapter to map static data to views defined in an XML file. You can specify the data backing the list as an ArrayList of Maps. Each entry in the ArrayList corresponds to one row in the list. The Maps contain the data for each row. You also specify an XML file that defines the views used to display the row, and a mapping from keys in the Map to specific views")
-            val objc = MessageBean(json)
-            appendMessageToList(objc,0)
-            listViewAdapter!!.notifyDataSetChanged()
-        }, 10000)
-    }
-
     private fun showFloatingButton() {
         floatingButton!!.animate().setDuration(650).translationY(0F).start()
     }
@@ -211,9 +207,14 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
     private fun setProgressBarEnabled(enabled: Boolean) {
         val visibilityMode = if (enabled) View.VISIBLE else View.INVISIBLE
-        val progressBar = activity!!.findViewById<ProgressBar>(R.id.messagesProgressBar)
+        val progressBar = activity!!.findViewById<ProgressBar>(R.id.progressBar1)
 
         if (progressBar != null && progressBar.visibility != visibilityMode)
             progressBar.visibility = visibilityMode
+    }
+
+    private fun getShortSenderName(name: String):String {
+        val names = name.split(" ")
+        return activity!!.capitalizeString(names[0]) + " " + activity!!.capitalizeString(names.last())
     }
 }

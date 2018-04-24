@@ -19,17 +19,16 @@
         android:paddingTop="7dp"
         android:paddingBottom="5dp">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:gravity="start|end"
-            android:orientation="horizontal">
+            android:layout_width="fill_parent"
+            android:layout_height="16dp">
 
             <ImageView
                 android:id="@+id/sender_icon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:layout_alignParentStart="true"
                 android:layout_gravity="start"
                 android:src="@drawable/ic_message"
                 android:tint="@color/textColorHighlight" />
@@ -37,30 +36,32 @@
             <TextView
                 android:id="@+id/sender"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="start"
+                android:layout_toEndOf="@id/sender_icon"
                 android:layout_marginStart="5dp"
-                android:layout_weight=".60"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textColor="@color/textColorHighlight"
                 android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="0dp"
                 android:layout_gravity="end"
                 android:textAlignment="textEnd"
                 android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="@color/colorAccent"
-                android:textSize="11sp"
-                android:textStyle="italic" />
-        </LinearLayout>
+                android:textColor="@color/textColorHighlight"
+                android:textSize="11sp" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/message"
             android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
             android:textSize="15sp"
             android:maxLines="4"
             android:ellipsize="end"

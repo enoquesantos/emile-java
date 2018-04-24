@@ -258,6 +258,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
+    fun capitalizeString(line: String): String {
+        return Character.toUpperCase(line.toCharArray()[0]) + line.substring(1).toLowerCase()
+    }
+
     private fun setDrawerEnabled(enabled: Boolean) {
         val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)

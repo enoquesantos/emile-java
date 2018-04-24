@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class UserProfile {
 
     private         int             id;
@@ -24,6 +26,7 @@ public class UserProfile {
     private static  UserProfile     instance;
     private static  LocalStorage    localStorage;
     private static  String          TAG;
+    private ArrayList<IUserProfileChangeListener> listeners;
 
     /**
      * private construct : the class is a Singleton
@@ -42,6 +45,7 @@ public class UserProfile {
         courseSections      = new JSONArray();
         messageDestinations = new JSONArray();
         TAG                 = "UserProfile";
+        listeners           = new ArrayList<>();
     }
 
     /**
@@ -52,6 +56,10 @@ public class UserProfile {
         if (instance == null)
             instance = new UserProfile();
         return instance;
+    }
+
+    public void addUserProfileChangeListener(IUserProfileChangeListener listener) {
+        listeners.add(listener);
     }
 
     /**
@@ -72,7 +80,7 @@ public class UserProfile {
 
             if (!name.equals("")) {
                 String[] names = name.split(" ");
-                shortUsername = capitalizeString(names[0]) + " " + capitalizeString(names[names.length-1]);
+                shortUsername = activity.capitalizeString(names[0]) + " " + activity.capitalizeString(names[names.length-1]);
             }
 
             // when student, the json (after login) already contains the program object!
@@ -92,6 +100,7 @@ public class UserProfile {
             }
 
             activity.setNavViewUserInformation(this);
+            notifyListeners();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -236,7 +245,7 @@ public class UserProfile {
             option.put("name", section.getString("name"));
             option.put("post_data_key", "course_section_id");
             option.put("post_data_val", section.getInt("id"));
-            option.put("title", "Todos os alunos de " + section.getString("name"));
+            option.put("title", "Todos os alunos de " + getPrettySectionName(section.getString("name")));
             option.put("url_service", "sendMessageToStudentsOfACourseSection");
 
             messageDestinations.put(option);
@@ -291,7 +300,29 @@ public class UserProfile {
             userExtraData.loadProgram();
     }
 
-    private String capitalizeString(String line) {
-        return Character.toUpperCase(line.toCharArray()[0]) + line.substring(1).toLowerCase();
+    private void notifyListeners() {
+        final UserProfile self = instance;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    for (IUserProfileChangeListener l : listeners)
+                        l.userProfileChanged(self);
+                } catch (Exception e) {
+                    // Log.e(TAG, Log.getStackTraceString(e));
+                }
+            }
+        }).start();
+    }
+
+    private static String getPrettySectionName(String section) {
+        String[] names = section.split("-");
+        int length = names.length;
+        if (length > 0) {
+            String name = names[0];
+            if (length > 1) name += " " + names[length-1];
+            return name;
+        }
+        return section;
     }
 }

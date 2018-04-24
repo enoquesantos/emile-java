@@ -4,16 +4,16 @@ import java.util.Map;
 import org.json.JSONObject;
 import android.app.Service;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.FirebaseMessagingService;
 
+// https://stackoverflow.com/questions/37711082/how-to-handle-notification-when-app-in-background-in-firebase/37845174#37845174
 public class PushMessageService extends FirebaseMessagingService {
 
     private static String TAG = "PushMessageService";
-
-    public PushMessageService() { }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -45,7 +45,16 @@ public class PushMessageService extends FirebaseMessagingService {
 
             // show system notification
             Notifications sn = Notifications.getInstance();
+            sn.initialize(this);
             sn.notify(title, message, messageData);
+
+            notifyApplicationReceivers(json);
         }
+    }
+
+    private void notifyApplicationReceivers(JSONObject json) {
+        Intent intent = new Intent("push_message");
+        intent.putExtra("message_data", json.toString());
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }
