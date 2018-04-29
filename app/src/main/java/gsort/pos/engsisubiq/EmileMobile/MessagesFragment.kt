@@ -30,6 +30,7 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
     private var listViewAdapter     : SimpleAdapter?         = null
     private var messagesOnTheView   : ArrayList<Int>?        = null
     private var userProfile         : UserProfile?           = null
+    private var pageView            : View?                  = null
     private var listViewModel       : ArrayList<HashMap<String,String>>? = null
     private var fieldsNames         = arrayOf("sender", "title", "message", "date", "time")
     private var fieldsIds           = intArrayOf(R.id.sender, R.id.title, R.id.message, R.id.date, R.id.time)
@@ -50,6 +51,8 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // prevent view to be recreated
+        retainInstance      = true
         activity            = getActivity() as? MainActivity
         listViewModel       = ArrayList()
         messagesOnTheView   = ArrayList()
@@ -58,35 +61,39 @@ class MessagesFragment : Fragment(), IRequestHttpFragment, AbsListView.OnScrollL
 
         val lbm = LocalBroadcastManager.getInstance(activity!!.applicationContext)
         lbm.registerReceiver(broadcastReceiver, IntentFilter("push_message"))
+
+        listViewAdapter = SimpleAdapter(activity!!, listViewModel, R.layout.messages_list_item, fieldsNames, fieldsIds)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.messages_main, container, false)
+        if (pageView == null) {
+            pageView = inflater.inflate(R.layout.messages_main, container, false)
+
+            listView = activity!!.findViewById(R.id.list)
+            listView!!.adapter = listViewAdapter
+            listView!!.onItemClickListener = this
+            listView!!.setOnScrollListener(this)
+
+            floatingButton = activity!!.findViewById(R.id.send_message_action)
+            floatingButton!!.setOnClickListener { _ ->
+                Toast.makeText(activity!!, "Create a new message...", Toast.LENGTH_SHORT).show()
+            }
+
+            swipeRefreshWidget = activity!!.findViewById(R.id.swipe_container)
+            swipeRefreshWidget!!.setOnRefreshListener(this)
+        }
     }
 
     override fun onResume() {
         super.onResume()
 
-        activity!!.setToolBarTitle(activity!!.resources.getString(R.string.view_msg))
+        activity!!.setToolBarTitle(activity!!.getStringFromId(R.string.view_msg))
         activity!!.setNavViewItemSelected(R.id.view_msg)
 
-        listView = activity!!.findViewById(R.id.list)
-        floatingButton = activity!!.findViewById(R.id.send_message_action)
-        floatingButton!!.setOnClickListener { _ ->
-            Toast.makeText(activity!!, "Create a new message...", Toast.LENGTH_SHORT).show()
+        // get messages from local storage if is not loaded from previous execution
+        if (messagesOnTheView!!.isEmpty()) {
+            requestHandle!!.loadFromLocalStorage()
         }
-
-        listViewAdapter = SimpleAdapter(activity!!, listViewModel, R.layout.messages_list_item, fieldsNames, fieldsIds)
-        listView!!.adapter = listViewAdapter
-
-        swipeRefreshWidget = activity!!.findViewById(R.id.swipe_container)
-        swipeRefreshWidget!!.setOnRefreshListener(this)
-
-        listView!!.onItemClickListener = this
-        listView!!.setOnScrollListener(this)
-
-        // get messages from local storage if exists from previous execution
-        requestHandle!!.loadFromLocalStorage()
 
         // start a request to load for new messages
         onRefresh()

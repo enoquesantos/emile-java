@@ -104,16 +104,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     /**
-     * Handle android physical back button
+     * Handle back button clicks
      */
     override fun onBackPressed() {
-        if (isToolbarBackButtonEnabled)
-            setToolBarHomeButton()
         when {
             drawer_layout.isDrawerOpen(GravityCompat.START) -> drawer_layout.closeDrawer(GravityCompat.START)
             supportFragmentManager.backStackEntryCount <= 1 -> moveTaskToBack(false)
             else -> super.onBackPressed()
         }
+
+        if (isToolbarBackButtonEnabled)
+            setToolBarHomeButton()
     }
 
     /**
@@ -150,6 +151,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (currentFragmentTag != tag)
             addFragment(fragment, tag)
+
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -184,8 +186,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun addFragment(fragment: Fragment? = null, tag: String?) {
         supportFragmentManager.beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_in, R.anim.slide_out_right)
                 .replace(R.id.content_frame, fragment)
                 .addToBackStack(tag)
                 .commit()
@@ -220,12 +221,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         setDrawerEnabled(false)
 
+        isToolbarBackButtonEnabled = true
+
         toolbar!!.setNavigationOnClickListener(View.OnClickListener {
             onBackPressed()
-            setToolBarHomeButton()
         })
-
-        isToolbarBackButtonEnabled = true
     }
 
     fun setToolBarTitle(title: String) {
@@ -235,10 +235,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun setKeyboardEnabled(enabled: Boolean, editText: EditText? = null) {
         val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         // Find the currently focused view, so we can grab the correct window token from it.
+
         var view = this.currentFocus
         // If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null)
             view = View(this)
+
         if (enabled)
             imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
         else
@@ -265,8 +267,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setDrawerEnabled(enabled: Boolean) {
         val lockMode = if (enabled) DrawerLayout.LOCK_MODE_UNLOCKED else DrawerLayout.LOCK_MODE_LOCKED_CLOSED
         val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+
         drawer_layout.addDrawerListener(toggle)
         drawer_layout.setDrawerLockMode(lockMode)
+
         toggle.syncState()
         toggle.onDrawerStateChanged(lockMode)
         toggle.isDrawerIndicatorEnabled = enabled
@@ -288,12 +292,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun initializeWidgets() {
         setToolBarEnabled(true)
         setDrawerEnabled(true)
+
         nav_view.setNavigationItemSelectedListener(this)
     }
 
     private fun clearFragmentsStack() {
         var i = 0
         val fragmentsSize = supportFragmentManager.backStackEntryCount
+
         while (i < fragmentsSize) {
             try {
                 supportFragmentManager!!.popBackStackImmediate()
